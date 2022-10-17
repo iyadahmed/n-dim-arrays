@@ -41,12 +41,12 @@ public:
 
     Matrix2D get_row(int row_index) const
     {
-        return Matrix2D(data + (row_index * row_stride), 1, num_cols, num_cols);
+        return Matrix2D(data + (row_index * row_stride), 1, num_cols, row_stride);
     }
 
     Matrix2D get_column(int col_index) const
     {
-        return Matrix2D(data + col_index, num_rows, 1, num_cols);
+        return Matrix2D(data + col_index, num_rows, 1, row_stride);
     }
 
     int get_num_cols() const
