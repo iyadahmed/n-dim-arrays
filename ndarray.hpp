@@ -21,13 +21,22 @@ private:
     }
 
 public:
-    NDArray(int num_rows, int num_cols) : num_rows(num_rows), num_cols(num_cols), row_stride(num_cols), col_stride(1)
+    NDArray(int num_rows, int num_cols)
+        : num_rows(num_rows),
+          num_cols(num_cols),
+          row_stride(num_cols),
+          col_stride(1)
     {
         // FIXME: free this and handle copy and move constructor (or delete those constructors)
         data = new float[num_rows * num_cols];
     }
 
-    NDArray(float *data, int num_rows, int num_cols, int row_stride, int col_stride) : data(data), num_rows(num_rows), num_cols(num_cols), row_stride(row_stride), col_stride(col_stride)
+    NDArray(float *data, int num_rows, int num_cols, int row_stride, int col_stride)
+        : data(data),
+          num_rows(num_rows),
+          num_cols(num_cols),
+          row_stride(row_stride),
+          col_stride(col_stride)
     {
     }
 
