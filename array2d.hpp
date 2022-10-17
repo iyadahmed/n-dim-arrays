@@ -56,7 +56,7 @@ public:
 
     Array2D get_row(int row_index) const
     {
-        return Array2D{data, (row_index * row_stride), 1, num_cols, row_stride, col_stride};
+        return Array2D(data, (row_index * row_stride), 1, num_cols, row_stride, col_stride);
     }
 
     Array2D get_column(int col_index) const
