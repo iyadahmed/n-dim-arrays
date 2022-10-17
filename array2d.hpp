@@ -8,7 +8,7 @@
 // Answer: assume we want to create A LOT of matrices with different shapes?
 // There is an overhead (at least in generated code size)
 
-class NDArray
+class Array2D
 {
 private:
     std::shared_ptr<float[]> data;
@@ -24,7 +24,7 @@ private:
     }
 
 public:
-    NDArray(int num_rows, int num_cols)
+    Array2D(int num_rows, int num_cols)
         : offset(0),
           num_rows(num_rows),
           num_cols(num_cols),
@@ -34,7 +34,7 @@ public:
         data = std::shared_ptr<float[]>(new float[num_rows * num_cols]);
     }
 
-    NDArray(std::shared_ptr<float[]> data, int offset, int num_rows, int num_cols, int row_stride, int col_stride)
+    Array2D(std::shared_ptr<float[]> data, int offset, int num_rows, int num_cols, int row_stride, int col_stride)
         : data(data),
           offset(offset),
           num_rows(num_rows),
@@ -54,14 +54,14 @@ public:
         return data[calc_offset(row_index, col_index)];
     }
 
-    NDArray get_row(int row_index) const
+    Array2D get_row(int row_index) const
     {
-        return NDArray{data, (row_index * row_stride), 1, num_cols, row_stride, col_stride};
+        return Array2D{data, (row_index * row_stride), 1, num_cols, row_stride, col_stride};
     }
 
-    NDArray get_column(int col_index) const
+    Array2D get_column(int col_index) const
     {
-        return NDArray(data, col_index, num_rows, 1, row_stride, col_stride);
+        return Array2D(data, col_index, num_rows, 1, row_stride, col_stride);
     }
 
     int get_num_cols() const
@@ -74,18 +74,18 @@ public:
         return num_rows;
     }
 
-    NDArray mat_mul(const NDArray &other) const
+    Array2D mat_mul(const Array2D &other) const
     {
         assert(num_cols == other.num_rows);
 
-        NDArray out(num_rows, other.num_cols);
+        Array2D out(num_rows, other.num_cols);
 
         for (int i = 0; i < out.num_rows; i++)
         {
             for (int j = 0; j < out.num_cols; j++)
             {
-                NDArray row = get_row(i);
-                NDArray col = other.get_column(j);
+                Array2D row = get_row(i);
+                Array2D col = other.get_column(j);
 
                 float &out_elem = out.element(i, j);
                 out_elem = 0.0f;
