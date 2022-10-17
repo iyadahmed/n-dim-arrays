@@ -34,6 +34,11 @@ public:
         return data[calc_offset(row_index, col_index)];
     }
 
+    const float &element(int row_index, int col_index) const
+    {
+        return data[calc_offset(row_index, col_index)];
+    }
+
     Matrix2D get_row(int row_index) const
     {
         return Matrix2D(data + (row_index * row_stride), 1, num_cols, num_cols);
