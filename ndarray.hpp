@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <utility> // for std::swap
+#include <memory>  // for std::shared_ptr
 
 // Why not templates to set number of rows and columns and allocate array on stack without alloca?
 // Answer: assume we want to create A LOT of matrices with different shapes?
@@ -10,29 +11,32 @@
 class NDArray
 {
 private:
-    float *data = nullptr;
-    int num_rows = 0, num_cols = 0;
+    std::shared_ptr<float[]> data;
+    int offset = 0;
+    int num_rows = 0;
+    int num_cols = 0;
     int row_stride = 0;
     int col_stride = 0;
 
     int calc_offset(int row_index, int col_index) const
     {
-        return row_index * row_stride + col_index * col_stride;
+        return offset + row_index * row_stride + col_index * col_stride;
     }
 
 public:
     NDArray(int num_rows, int num_cols)
-        : num_rows(num_rows),
+        : offset(0),
+          num_rows(num_rows),
           num_cols(num_cols),
           row_stride(num_cols),
           col_stride(1)
     {
-        // FIXME: free this and handle copy and move constructor (or delete those constructors)
-        data = new float[num_rows * num_cols];
+        data = std::shared_ptr<float[]>(new float[num_rows * num_cols]);
     }
 
-    NDArray(float *data, int num_rows, int num_cols, int row_stride, int col_stride)
+    NDArray(std::shared_ptr<float[]> data, int offset, int num_rows, int num_cols, int row_stride, int col_stride)
         : data(data),
+          offset(offset),
           num_rows(num_rows),
           num_cols(num_cols),
           row_stride(row_stride),
@@ -52,12 +56,12 @@ public:
 
     NDArray get_row(int row_index) const
     {
-        return NDArray(data + (row_index * row_stride), 1, num_cols, row_stride, col_stride);
+        return NDArray{data, (row_index * row_stride), 1, num_cols, row_stride, col_stride};
     }
 
     NDArray get_column(int col_index) const
     {
-        return NDArray(data + col_index, num_rows, 1, row_stride, col_stride);
+        return NDArray(data, col_index, num_rows, 1, row_stride, col_stride);
     }
 
     int get_num_cols() const
