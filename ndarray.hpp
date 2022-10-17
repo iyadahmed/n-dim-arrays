@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <utility> // for std::swap
 
 // Why not templates to set number of rows and columns and allocate array on stack without alloca?
 // Answer: assume we want to create A LOT of matrices with different shapes?
@@ -10,22 +11,23 @@ class NDArray
 {
 private:
     float *data = nullptr;
-    const int num_rows = 0, num_cols = 0;
-    const int row_stride = 0; // TODO: add column stride for "fast transpose"
+    int num_rows = 0, num_cols = 0;
+    int row_stride = 0;
+    int col_stride = 0;
 
     int calc_offset(int row_index, int col_index) const
     {
-        return row_index * row_stride + col_index;
+        return row_index * row_stride + col_index * col_stride;
     }
 
 public:
-    NDArray(int num_rows, int num_cols) : num_rows(num_rows), num_cols(num_cols), row_stride(num_cols)
+    NDArray(int num_rows, int num_cols) : num_rows(num_rows), num_cols(num_cols), row_stride(num_cols), col_stride(1)
     {
         // FIXME: free this and handle copy and move constructor (or delete those constructors)
         data = new float[num_rows * num_cols];
     }
 
-    NDArray(float *data, int num_rows, int num_cols, int row_stride) : data(data), num_rows(num_rows), num_cols(num_cols), row_stride(row_stride)
+    NDArray(float *data, int num_rows, int num_cols, int row_stride, int col_stride) : data(data), num_rows(num_rows), num_cols(num_cols), row_stride(row_stride), col_stride(col_stride)
     {
     }
 
@@ -41,12 +43,12 @@ public:
 
     NDArray get_row(int row_index) const
     {
-        return NDArray(data + (row_index * row_stride), 1, num_cols, row_stride);
+        return NDArray(data + (row_index * row_stride), 1, num_cols, row_stride, col_stride);
     }
 
     NDArray get_column(int col_index) const
     {
-        return NDArray(data + col_index, num_rows, 1, row_stride);
+        return NDArray(data + col_index, num_rows, 1, row_stride, col_stride);
     }
 
     int get_num_cols() const
@@ -84,5 +86,11 @@ public:
         }
 
         return out;
+    }
+
+    void transpose()
+    {
+        std::swap(row_stride, col_stride);
+        std::swap(num_rows, num_cols);
     }
 };
