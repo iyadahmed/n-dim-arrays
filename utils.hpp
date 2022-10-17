@@ -3,14 +3,14 @@
 #include <iostream>
 #include "ndarray.hpp"
 
-Matrix2D read_matrix_from_stdin()
+NDArray read_matrix_from_stdin()
 {
     int num_rows, num_cols;
 
     std::cout << "Enter matrix dimensions: " << std::endl;
     std::cin >> num_rows >> num_cols;
 
-    Matrix2D matrix(num_rows, num_cols);
+    NDArray matrix(num_rows, num_cols);
 
     std::cout << "Enter matrix elements: " << std::endl;
     for (int i = 0; i < num_rows; i++)
@@ -25,7 +25,7 @@ Matrix2D read_matrix_from_stdin()
     return matrix;
 }
 
-void print_matrix(const Matrix2D &matrix)
+void print_matrix(const NDArray &matrix)
 {
     for (int i = 0; i < matrix.get_num_rows(); i++)
     {

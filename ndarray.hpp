@@ -6,7 +6,7 @@
 // Answer: assume we want to create A LOT of matrices with different shapes?
 // There is an overhead (at least in generated code size)
 
-class Matrix2D
+class NDArray
 {
 private:
     float *data = nullptr;
@@ -19,13 +19,13 @@ private:
     }
 
 public:
-    Matrix2D(int num_rows, int num_cols) : num_rows(num_rows), num_cols(num_cols), row_stride(num_cols)
+    NDArray(int num_rows, int num_cols) : num_rows(num_rows), num_cols(num_cols), row_stride(num_cols)
     {
         // FIXME: free this and handle copy and move constructor (or delete those constructors)
         data = new float[num_rows * num_cols];
     }
 
-    Matrix2D(float *data, int num_rows, int num_cols, int row_stride) : data(data), num_rows(num_rows), num_cols(num_cols), row_stride(row_stride)
+    NDArray(float *data, int num_rows, int num_cols, int row_stride) : data(data), num_rows(num_rows), num_cols(num_cols), row_stride(row_stride)
     {
     }
 
@@ -39,14 +39,14 @@ public:
         return data[calc_offset(row_index, col_index)];
     }
 
-    Matrix2D get_row(int row_index) const
+    NDArray get_row(int row_index) const
     {
-        return Matrix2D(data + (row_index * row_stride), 1, num_cols, row_stride);
+        return NDArray(data + (row_index * row_stride), 1, num_cols, row_stride);
     }
 
-    Matrix2D get_column(int col_index) const
+    NDArray get_column(int col_index) const
     {
-        return Matrix2D(data + col_index, num_rows, 1, row_stride);
+        return NDArray(data + col_index, num_rows, 1, row_stride);
     }
 
     int get_num_cols() const
@@ -59,18 +59,18 @@ public:
         return num_rows;
     }
 
-    Matrix2D mat_mul(const Matrix2D &other) const
+    NDArray mat_mul(const NDArray &other) const
     {
         assert(num_cols == other.num_rows);
 
-        Matrix2D out(num_rows, other.num_cols);
+        NDArray out(num_rows, other.num_cols);
 
         for (int i = 0; i < out.num_rows; i++)
         {
             for (int j = 0; j < out.num_cols; j++)
             {
-                Matrix2D row = get_row(i);
-                Matrix2D col = other.get_column(j);
+                NDArray row = get_row(i);
+                NDArray col = other.get_column(j);
 
                 float &out_elem = out.element(i, j);
                 out_elem = 0.0f;
